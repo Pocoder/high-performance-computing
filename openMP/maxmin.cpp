@@ -39,16 +39,16 @@ int par_alg(const vector<vector<int>>& matrix){
 	int n = matrix.size(), m = matrix[0].size();
 	vector<int> mins(n);
 	omp_set_num_threads(16);
-	#pragma omp parallel
-	{
+	#pragma omp parallel for
 	for (int i = 0; i < n; i++){
-		mins[i] = matrix[i][0];
-		#pragma parallel for reduction(min: mins[i])
+		int min_i = matrix[i][0];
+		#pragma omp parallel for reduction(min: min_i)
 		for (int j = 1; j<m;j++){
-			mins[i] = min(mins[i], matrix[i][j]);
+			min_i = min(min_i, matrix[i][j]);
 		}
+		mins[i] = min_i;
 	}
-	}
+
 	int maxmin = mins[0];
 	#pragma omp parallel for reduction(max: maxmin)
 	for (int i = 1; i<n; i++){
